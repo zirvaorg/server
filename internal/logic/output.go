@@ -28,7 +28,7 @@ func Output(tp string, text string) {
 		c = color.New(color.FgHiRed).SprintFunc()
 		prefix = "[err]"
 	case "info":
-		c = color.New(color.FgHiGreen).SprintFunc()
+		c = color.New(color.FgHiBlue).SprintFunc()
 		prefix = "[info]"
 	case "ok":
 		c = color.New(color.FgHiGreen).SprintFunc()
