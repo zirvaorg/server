@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"server/internal/logic"
 	"server/internal/msg"
 	"server/internal/server"
 )
@@ -14,6 +15,11 @@ func init() {
 }
 
 func main() {
+	if !logic.CheckPrivileges() {
+		logic.Output("error", msg.PrivilegesErr)
+		return
+	}
+
 	mux := http.NewServeMux()
 	server.SetupRoutes(mux)
 
