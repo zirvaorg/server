@@ -1,0 +1,82 @@
+package service
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"golang.org/x/net/icmp"
+	"golang.org/x/net/ipv4"
+	"net"
+	"time"
+)
+
+type PingResult struct {
+	IP     string `json:"ip"`
+	MinRTT string `json:"min_rtt"`
+	AvgRTT string `json:"avg_rtt"`
+	MaxRTT string `json:"max_rtt"`
+}
+
+func Ping(ip string, count int, timeout time.Duration) (PingResult, error) {
+	if count <= 0 {
+		return PingResult{}, errors.New("count should be greater than 0")
+	}
+
+	c, err := icmp.ListenPacket("ip4:icmp", "0.0.0.0")
+	if err != nil {
+		return PingResult{}, errors.New("ICMP listen error")
+	}
+	defer c.Close()
+
+	dst, err := net.ResolveIPAddr("ip4", ip)
+	if err != nil {
+		return PingResult{}, errors.New("IP resolve error")
+	}
+
+	rtts := make([]time.Duration, count)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	for i := 0; i < count; i++ {
+		msg := icmp.Message{
+			Type: ipv4.ICMPTypeEcho, Code: 0,
+			Body: &icmp.Echo{ID: i, Seq: i, Data: []byte("ZIRVA")},
+		}
+		msgBytes, _ := msg.Marshal(nil)
+
+		start := time.Now()
+		if _, err := c.WriteTo(msgBytes, dst); err != nil {
+			return PingResult{}, errors.New("ICMP write error")
+		}
+
+		c.SetReadDeadline(time.Now().Add(2 * time.Second))
+		select {
+		case <-ctx.Done():
+			return PingResult{}, errors.New("ICMP timeout")
+		default:
+			_, _, err := c.ReadFrom(make([]byte, 1500))
+			if err != nil {
+				return PingResult{}, errors.New("ICMP read error")
+			}
+			rtts[i] = time.Since(start)
+		}
+	}
+
+	minRTT, maxRTT, totalRTT := rtts[0], rtts[0], rtts[0]
+	for _, rtt := range rtts[1:] {
+		if rtt < minRTT {
+			minRTT = rtt
+		}
+		if rtt > maxRTT {
+			maxRTT = rtt
+		}
+		totalRTT += rtt
+	}
+
+	return PingResult{
+		IP:     ip,
+		MinRTT: fmt.Sprintf("%v", minRTT),
+		AvgRTT: fmt.Sprintf("%v", totalRTT/time.Duration(count)),
+		MaxRTT: fmt.Sprintf("%v", maxRTT),
+	}, nil
+}
