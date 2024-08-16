@@ -22,7 +22,7 @@ func StartServer(handler http.Handler, port string) {
 
 	if !logic.CheckAuthFile() {
 		token := logic.GenerateRegistrarToken()
-		logic.Output("warn", fmt.Sprintf(msg.RegistrarErr, port, token))
+		logic.Output("warn", fmt.Sprintf(msg.RegistrarErr, logic.ResolveExternalIP(), port, token))
 	}
 
 	log.Fatal(server.ListenAndServe())
