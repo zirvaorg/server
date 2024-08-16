@@ -1,11 +1,16 @@
 package server
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"server/internal/logic"
 	"server/internal/msg"
+	"syscall"
 	"time"
 )
 
@@ -25,5 +30,23 @@ func StartServer(handler http.Handler, port string) {
 		logic.Output("warn", fmt.Sprintf(msg.RegistrarErr, logic.ResolveExternalIP(), port, token))
 	}
 
-	log.Fatal(server.ListenAndServe())
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			logic.Output("error", fmt.Sprintf(err.Error()))
+		}
+	}()
+
+	<-stop
+
+	logic.Output("info", msg.ShutdownServer)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf(msg.ServerForceShutdown, err)
+	}
 }

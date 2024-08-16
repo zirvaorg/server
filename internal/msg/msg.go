@@ -14,4 +14,7 @@ zirva server v1.0.0 (https://zirva.org)`
 	ServerRunning = "server is running on port %s"
 	RegistrarErr  = "the server is not registered! register the server by entering this link in the portal:\nhttp://%s:%s/registrar?t=%s"
 	RegistrarOk   = "registrar has been successfully!"
+
+	ShutdownServer      = "shutting down the server..."
+	ServerForceShutdown = "server forced to shutdown: %v"
 )
