@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
 	"net"
@@ -11,10 +10,10 @@ import (
 )
 
 type PingResult struct {
-	IP     string `json:"ip"`
-	MinRTT string `json:"min_rtt"`
-	AvgRTT string `json:"avg_rtt"`
-	MaxRTT string `json:"max_rtt"`
+	IP     string  `json:"ip"`
+	MinRTT float64 `json:"min_rtt"`
+	AvgRTT float64 `json:"avg_rtt"`
+	MaxRTT float64 `json:"max_rtt"`
 }
 
 func Ping(ip string, count int, timeout time.Duration) (PingResult, error) {
@@ -75,8 +74,8 @@ func Ping(ip string, count int, timeout time.Duration) (PingResult, error) {
 
 	return PingResult{
 		IP:     ip,
-		MinRTT: fmt.Sprintf("%v", minRTT),
-		AvgRTT: fmt.Sprintf("%v", totalRTT/time.Duration(count)),
-		MaxRTT: fmt.Sprintf("%v", maxRTT),
+		MinRTT: float64(minRTT.Milliseconds()),
+		AvgRTT: float64(totalRTT.Milliseconds()) / float64(count),
+		MaxRTT: float64(maxRTT.Milliseconds()),
 	}, nil
 }
