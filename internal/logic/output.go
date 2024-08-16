@@ -33,6 +33,12 @@ func Output(tp string, text string) {
 	case "ok":
 		c = color.New(color.FgHiGreen).SprintFunc()
 		prefix = "[ok]"
+	case "log":
+		c = color.New(color.FgHiCyan).SprintFunc()
+		prefix = "[log]"
+	case "log_error":
+		c = color.New(color.FgHiRed).SprintFunc()
+		prefix = "[log]"
 	default:
 		prefix = ""
 	}

@@ -16,6 +16,13 @@ type Response struct {
 func WriteResponse(w http.ResponseWriter, response *Response) {
 	jsonBody, _ := json.Marshal(response)
 
+	switch response.Success {
+	case true:
+		Output("log", string(jsonBody))
+	case false:
+		Output("log_error", string(jsonBody))
+	}
+
 	w.Header().Add("content-type", "application/json")
 	w.WriteHeader(response.Status)
 	_, err := w.Write(jsonBody)
