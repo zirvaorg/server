@@ -15,6 +15,7 @@ zirva server v1.0.0 (https://zirva.org)`
 	PrivilegesErr       = "you must run the server as root!"
 	ShutdownServer      = "shutting down the server..."
 	ServerForceShutdown = "server forced to shutdown: %v"
+	ServerPortInUse     = "port %s is already in use. select `-p <port>` to specify a different port"
 
 	RegistrarOk          = "registrar has been successfully!"
 	RegistrarErr         = "the server is not registered! register the server by entering this link in the portal:\nhttp://%s:%s/registrar?t=%s"

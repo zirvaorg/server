@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"server/internal/logic"
@@ -8,15 +9,19 @@ import (
 	"server/internal/server"
 )
 
-const ServerPort = "9479"
+var DefaultServerPort = "9479"
 
 func init() {
 	fmt.Println(msg.Logo)
+
+	flag.StringVar(&DefaultServerPort, "p", DefaultServerPort, "server listen port")
+	flag.Parse()
 }
 
 func main() {
-	if !logic.CheckPrivileges() {
-		logic.Output("error", msg.PrivilegesErr)
+	err := logic.CheckEnvironment(DefaultServerPort)
+	if err != nil {
+		logic.Output("error", err.Error())
 		return
 	}
 
@@ -24,5 +29,5 @@ func main() {
 	server.SetupRoutes(mux)
 
 	middlewareMux := server.SetupMiddleware(mux)
-	server.StartServer(middlewareMux, ServerPort)
+	server.StartServer(middlewareMux, DefaultServerPort)
 }
