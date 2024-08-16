@@ -9,9 +9,16 @@ import (
 func Registrar(mux *http.ServeMux) {
 	mux.HandleFunc("GET /registrar", func(w http.ResponseWriter, r *http.Request) {
 		t := r.URL.Query().Get("t")
+		z := r.URL.Query().Get("z")
 
 		if t != logic.TempRegistrarToken || logic.CheckAuthFile() {
 			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		if z == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			logic.Output("error", msg.RegistrarEnterPortal)
 			return
 		}
 
