@@ -2,6 +2,7 @@ package logic
 
 import (
 	"io"
+	"net"
 	"net/http"
 )
 
@@ -53,7 +54,10 @@ func ResolveExternalIP() string {
 			continue
 		}
 
-		return string(body)
+		ip := string(body)
+		if net.ParseIP(ip) != nil {
+			return ip
+		}
 	}
 
 	return "[EXTERNAL_IP]"
