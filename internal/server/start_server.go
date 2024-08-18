@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"server/internal/logic"
 	"server/internal/msg"
+	"server/internal/utils"
 	"syscall"
 	"time"
 )
@@ -27,7 +28,7 @@ func StartServer(handler http.Handler, port string) {
 
 	if !logic.CheckAuthFile() {
 		token := logic.GenerateRegistrarToken()
-		logic.Output("warn", fmt.Sprintf(msg.RegistrarErr, logic.ResolveExternalIP(), port, token))
+		logic.Output("warn", fmt.Sprintf(msg.RegistrarErr, utils.ResolveExternalIP(), port, token))
 	}
 
 	stop := make(chan os.Signal, 1)

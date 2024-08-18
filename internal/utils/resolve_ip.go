@@ -1,4 +1,4 @@
-package logic
+package utils
 
 import (
 	"errors"
@@ -9,7 +9,8 @@ import (
 func ResolveIP(domainOrIP string) (string, error) {
 	parsedURL, err := url.Parse(domainOrIP)
 	if err == nil && parsedURL.Host != "" {
-		domainOrIP = parsedURL.Host
+		host := parsedURL.Hostname()
+		domainOrIP = host
 	}
 
 	if net.ParseIP(domainOrIP) != nil {
