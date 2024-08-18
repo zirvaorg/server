@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 	"server/internal/logic"
+	"server/internal/utils"
 	"server/middleware"
 	"server/service"
 	"time"
@@ -10,8 +11,8 @@ import (
 
 var serviceList = map[string]bool{
 	"ping": true,
-	"http": true, //@todo
-	"tcp":  true, //@todo
+	"http": true,
+	"tcp":  true,
 }
 
 func Service(mux *http.ServeMux) {
@@ -27,7 +28,7 @@ func Service(mux *http.ServeMux) {
 		case "ping":
 			p := r.URL.Query().Get("p")
 
-			resolvedIP, err := logic.ResolveIP(p)
+			resolvedIP, err := utils.ResolveIP(p)
 			if err != nil {
 				logic.WriteResponse(w, &logic.Response{
 					Status:  http.StatusBadRequest,
@@ -49,6 +50,15 @@ func Service(mux *http.ServeMux) {
 				Status:     http.StatusOK,
 				Success:    true,
 				PingResult: &ping,
+			})
+
+		case "http":
+			p := r.URL.Query().Get("p")
+			httpResult, err := service.Http(p)
+			logic.WriteResponse(w, &logic.Response{
+				Status:     http.StatusOK,
+				Success:    err == nil,
+				HttpResult: &httpResult,
 			})
 		}
 	}))
