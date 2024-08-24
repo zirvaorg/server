@@ -25,7 +25,12 @@ func Ping(ip string, count int, timeout time.Duration) (PingResult, error) {
 	if err != nil {
 		return PingResult{}, errors.New("ICMP listen error")
 	}
-	defer c.Close()
+	defer func(c *icmp.PacketConn) {
+		err := c.Close()
+		if err != nil {
+			return
+		}
+	}(c)
 
 	dst, err := net.ResolveIPAddr("ip4", ip)
 	if err != nil {
