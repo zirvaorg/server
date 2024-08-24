@@ -10,10 +10,66 @@ import (
 )
 
 var serviceList = map[string]bool{
-	"ping": true,
-	"http": true,
-	"tcp":  true,
-	"udp":  true,
+	"ping":       true,
+	"http":       true,
+	"tcp":        true,
+	"udp":        true,
+	"traceroute": true,
+}
+
+func handleServiceOperation(op, p string, resultChan chan<- *logic.Response) {
+	defer close(resultChan)
+
+	switch op {
+	case "ping":
+		resolvedIP, err := utils.ResolveIP(p)
+		if err != nil {
+			resultChan <- &logic.Response{
+				Status:  http.StatusBadRequest,
+				Success: false,
+			}
+			return
+		}
+
+		ping, err := service.Ping(resolvedIP, 10)
+		if err != nil {
+			resultChan <- &logic.Response{
+				Status:  http.StatusGatewayTimeout,
+				Success: false,
+			}
+			return
+		}
+
+		resultChan <- &logic.Response{
+			Status:     http.StatusOK,
+			Success:    true,
+			PingResult: &ping,
+		}
+
+	case "http":
+		httpResult, err := service.Http(p)
+		resultChan <- &logic.Response{
+			Status:     http.StatusOK,
+			Success:    err == nil,
+			HttpResult: &httpResult,
+		}
+
+	case "tcp", "udp":
+		connectionResult, err := service.TcpOrUdp(p, op)
+		resultChan <- &logic.Response{
+			Status:           http.StatusOK,
+			Success:          err == nil,
+			ConnectionResult: &connectionResult,
+		}
+
+	case "traceroute":
+		tracerouteResult, err := service.Traceroute(p)
+		resultChan <- &logic.Response{
+			Status:           http.StatusOK,
+			Success:          err == nil,
+			TracerouteResult: &tracerouteResult,
+		}
+	}
 }
 
 func Service(mux *http.ServeMux) {
@@ -26,47 +82,17 @@ func Service(mux *http.ServeMux) {
 		}
 
 		p := r.URL.Query().Get("p")
+		resultChan := make(chan *logic.Response)
 
-		switch op {
-		case "ping":
-			resolvedIP, err := utils.ResolveIP(p)
-			if err != nil {
-				logic.WriteResponse(w, &logic.Response{
-					Status:  http.StatusBadRequest,
-					Success: false,
-				})
-				return
-			}
+		go handleServiceOperation(op, p, resultChan)
 
-			ping, err := service.Ping(resolvedIP, 10, 10*time.Second)
-			if err != nil {
-				logic.WriteResponse(w, &logic.Response{
-					Status:  http.StatusGatewayTimeout,
-					Success: false,
-				})
-				return
-			}
-
+		select {
+		case res := <-resultChan:
+			logic.WriteResponse(w, res)
+		case <-time.After(120 * time.Second):
 			logic.WriteResponse(w, &logic.Response{
-				Status:     http.StatusOK,
-				Success:    true,
-				PingResult: &ping,
-			})
-
-		case "http":
-			httpResult, err := service.Http(p)
-			logic.WriteResponse(w, &logic.Response{
-				Status:     http.StatusOK,
-				Success:    err == nil,
-				HttpResult: &httpResult,
-			})
-
-		case "tcp", "udp":
-			connectionResult, err := service.TcpOrUdp(p, op)
-			logic.WriteResponse(w, &logic.Response{
-				Status:           http.StatusOK,
-				Success:          err == nil,
-				ConnectionResult: &connectionResult,
+				Status:  http.StatusGatewayTimeout,
+				Success: false,
 			})
 		}
 	}))
