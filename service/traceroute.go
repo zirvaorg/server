@@ -39,6 +39,7 @@ func Traceroute(address string) (TracerouteResult, error) {
 	icmpMutex.Lock()
 	defer icmpMutex.Unlock()
 
+	// @todo: resolve hostname containing protocol (http://, https://)
 	ipAddr, err := net.ResolveIPAddr("ip4", address)
 	if err != nil {
 		return TracerouteResult{}, err
