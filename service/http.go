@@ -8,12 +8,6 @@ import (
 	"time"
 )
 
-const (
-	UserAgent    = "zirva.org/1.0"
-	MaxRedirects = 10
-	TimeOut      = 10 * time.Second
-)
-
 type HttpResult struct {
 	URI          string   `json:"uri"`
 	StatusCode   int      `json:"status_code"`
