@@ -10,8 +10,9 @@ type Response struct {
 	Status  int  `json:"status"`
 	Success bool `json:"success"`
 
-	PingResult *service.PingResult `json:"ping_result,omitempty"`
-	HttpResult *service.HttpResult `json:"http_result,omitempty"`
+	PingResult       *service.PingResult       `json:"ping_result,omitempty"`
+	HttpResult       *service.HttpResult       `json:"http_result,omitempty"`
+	ConnectionResult *service.ConnectionResult `json:"connection_result,omitempty"`
 }
 
 func WriteResponse(w http.ResponseWriter, response *Response) {

@@ -13,6 +13,7 @@ var serviceList = map[string]bool{
 	"ping": true,
 	"http": true,
 	"tcp":  true,
+	"udp":  true,
 }
 
 func Service(mux *http.ServeMux) {
@@ -24,10 +25,10 @@ func Service(mux *http.ServeMux) {
 			return
 		}
 
+		p := r.URL.Query().Get("p")
+
 		switch op {
 		case "ping":
-			p := r.URL.Query().Get("p")
-
 			resolvedIP, err := utils.ResolveIP(p)
 			if err != nil {
 				logic.WriteResponse(w, &logic.Response{
@@ -53,12 +54,19 @@ func Service(mux *http.ServeMux) {
 			})
 
 		case "http":
-			p := r.URL.Query().Get("p")
 			httpResult, err := service.Http(p)
 			logic.WriteResponse(w, &logic.Response{
 				Status:     http.StatusOK,
 				Success:    err == nil,
 				HttpResult: &httpResult,
+			})
+
+		case "tcp", "udp":
+			connectionResult, err := service.TcpOrUdp(p, op)
+			logic.WriteResponse(w, &logic.Response{
+				Status:           http.StatusOK,
+				Success:          err == nil,
+				ConnectionResult: &connectionResult,
 			})
 		}
 	}))
