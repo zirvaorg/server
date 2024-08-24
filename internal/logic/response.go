@@ -13,6 +13,7 @@ type Response struct {
 	PingResult       *service.PingResult       `json:"ping_result,omitempty"`
 	HttpResult       *service.HttpResult       `json:"http_result,omitempty"`
 	ConnectionResult *service.ConnectionResult `json:"connection_result,omitempty"`
+	TracerouteResult *service.TracerouteResult `json:"traceroute_result,omitempty"`
 }
 
 func WriteResponse(w http.ResponseWriter, response *Response) {
