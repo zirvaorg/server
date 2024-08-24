@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const MaxRedirects = 10
+
 type HttpResult struct {
 	URI          string   `json:"uri"`
 	StatusCode   int      `json:"status_code"`
