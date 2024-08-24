@@ -6,8 +6,11 @@ import (
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
 	"net"
+	"sync"
 	"time"
 )
+
+var icmpMutex sync.Mutex
 
 type PingResult struct {
 	IP     string  `json:"ip"`
@@ -16,7 +19,10 @@ type PingResult struct {
 	MaxRTT float64 `json:"max_rtt"`
 }
 
-func Ping(ip string, count int, timeout time.Duration) (PingResult, error) {
+func Ping(ip string, count int) (PingResult, error) {
+	icmpMutex.Lock()
+	defer icmpMutex.Unlock()
+
 	if count <= 0 {
 		return PingResult{}, errors.New("count should be greater than 0")
 	}
@@ -38,13 +44,17 @@ func Ping(ip string, count int, timeout time.Duration) (PingResult, error) {
 	}
 
 	rtts := make([]time.Duration, count)
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), TimeOut)
 	defer cancel()
 
 	for i := 0; i < count; i++ {
 		msg := icmp.Message{
 			Type: ipv4.ICMPTypeEcho, Code: 0,
-			Body: &icmp.Echo{ID: i, Seq: i, Data: []byte("ZIRVA")},
+			Body: &icmp.Echo{
+				ID:   i,
+				Seq:  i,
+				Data: []byte(EchoData),
+			},
 		}
 		msgBytes, _ := msg.Marshal(nil)
 
