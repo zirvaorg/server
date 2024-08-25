@@ -29,7 +29,7 @@ type redirectResult struct {
 func Http(ipOrDomain string) (HttpResult, error) {
 	ipOrDomain = utils.FormatURL(ipOrDomain)
 
-	resolvedIP, err := utils.ResolveIP(ipOrDomain)
+	resolvedIP, err := utils.ResolveIPWithPort(ipOrDomain)
 	if err != nil {
 		return HttpResult{URI: ipOrDomain, ResolvedIPs: []string{resolvedIP}}, err
 	}
@@ -83,7 +83,7 @@ func handleRedirects(client *http.Client, req *http.Request) (redirectResult, er
 		result.Redirects = append(result.Redirects, resp.Request.URL.String())
 		result.StatusCodes = append(result.StatusCodes, resp.StatusCode)
 
-		resolvedIP, err := utils.ResolveIP(resp.Request.URL.String())
+		resolvedIP, err := utils.ResolveIPWithPort(resp.Request.URL.String())
 		if err != nil {
 			result.Error = err
 			return result, err

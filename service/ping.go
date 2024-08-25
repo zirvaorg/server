@@ -23,7 +23,7 @@ func Ping(domain string, count int) (PingResult, error) {
 		return PingResult{}, errors.New("count should be greater than 0")
 	}
 
-	resolvedIP, err := utils.ResolveIP(domain)
+	resolvedIP, err := utils.ResolveIPWithOutPort(domain)
 	if err != nil {
 		return PingResult{}, err
 	}

@@ -3,6 +3,7 @@ package service
 import (
 	"math/rand"
 	"net"
+	"server/internal/utils"
 	"time"
 
 	"golang.org/x/net/icmp"
@@ -26,17 +27,13 @@ type TracerouteResult struct {
 	Hops []TracerouteHop `json:"hops"`
 }
 
-func (hop *TracerouteHop) resolveHostname(ip string) {
-	names, err := net.LookupAddr(ip)
-	if err != nil || len(names) == 0 {
-		hop.Hostname = ip
-	} else {
-		hop.Hostname = names[0]
-	}
-}
-
 func Traceroute(address string) (TracerouteResult, error) {
-	ipAddr, err := net.ResolveIPAddr("ip4", address)
+	resolvedIP, err := utils.ResolveIPWithOutPort(address)
+	if err != nil {
+		return TracerouteResult{}, err
+	}
+
+	ipAddr, err := net.ResolveIPAddr("ip4", resolvedIP)
 	if err != nil {
 		return TracerouteResult{}, err
 	}
@@ -120,7 +117,7 @@ func Traceroute(address string) (TracerouteResult, error) {
 		if addr != nil {
 			hopAddr = addr.String()
 			hop := TracerouteHop{TTL: ttl, Addr: hopAddr, RTTs: RTTs}
-			hop.resolveHostname(hopAddr)
+			hop.Hostname = utils.ResolveHostname(hopAddr)
 			result.Hops = append(result.Hops, hop)
 		} else {
 			result.Hops = append(result.Hops, TracerouteHop{
