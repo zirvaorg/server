@@ -7,6 +7,7 @@ import (
 	"golang.org/x/net/ipv4"
 	"math/rand"
 	"net"
+	"server/internal/utils"
 	"time"
 )
 
@@ -17,9 +18,14 @@ type PingResult struct {
 	MaxRTT float64 `json:"max_rtt"`
 }
 
-func Ping(ip string, count int) (PingResult, error) {
+func Ping(domain string, count int) (PingResult, error) {
 	if count <= 0 {
 		return PingResult{}, errors.New("count should be greater than 0")
+	}
+
+	resolvedIP, err := utils.ResolveIP(domain)
+	if err != nil {
+		return PingResult{}, err
 	}
 
 	c, err := icmp.ListenPacket("ip4:icmp", "0.0.0.0")
@@ -28,7 +34,7 @@ func Ping(ip string, count int) (PingResult, error) {
 	}
 	defer c.Close()
 
-	dst, err := net.ResolveIPAddr("ip4", ip)
+	dst, err := net.ResolveIPAddr("ip4", resolvedIP)
 	if err != nil {
 		return PingResult{}, err
 	}
@@ -79,7 +85,7 @@ func Ping(ip string, count int) (PingResult, error) {
 	}
 
 	return PingResult{
-		IP:     ip,
+		IP:     resolvedIP,
 		MinRTT: float64(minRTT.Milliseconds()),
 		AvgRTT: float64(totalRTT.Milliseconds()) / float64(count),
 		MaxRTT: float64(maxRTT.Milliseconds()),

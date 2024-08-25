@@ -3,7 +3,6 @@ package routes
 import (
 	"net/http"
 	"server/internal/logic"
-	"server/internal/utils"
 	"server/middleware"
 	"server/service"
 	"sync"
@@ -28,43 +27,26 @@ func handleServiceOperation(op, p string, resultChan chan<- *logic.Response) {
 		mu.Lock()
 		defer mu.Unlock()
 
-		resolvedIP, err := utils.ResolveIP(p)
-		if err != nil {
-			resultChan <- &logic.Response{
-				Status:  http.StatusBadRequest,
-				Success: false,
-			}
-			return
-		}
-
-		ping, err := service.Ping(resolvedIP, 10)
-		if err != nil {
-			resultChan <- &logic.Response{
-				Status:  http.StatusGatewayTimeout,
-				Success: false,
-			}
-			return
-		}
-
+		ping, err := service.Ping(p, 10)
 		resultChan <- &logic.Response{
-			Status:     http.StatusOK,
-			Success:    true,
+			Success:    err == nil,
+			Error:      err,
 			PingResult: &ping,
 		}
 
 	case "http":
 		httpResult, err := service.Http(p)
 		resultChan <- &logic.Response{
-			Status:     http.StatusOK,
 			Success:    err == nil,
+			Error:      err,
 			HttpResult: &httpResult,
 		}
 
 	case "tcp", "udp":
 		connectionResult, err := service.TcpOrUdp(p, op)
 		resultChan <- &logic.Response{
-			Status:           http.StatusOK,
 			Success:          err == nil,
+			Error:            err,
 			ConnectionResult: &connectionResult,
 		}
 
@@ -74,8 +56,8 @@ func handleServiceOperation(op, p string, resultChan chan<- *logic.Response) {
 
 		tracerouteResult, err := service.Traceroute(p)
 		resultChan <- &logic.Response{
-			Status:           http.StatusOK,
 			Success:          err == nil,
+			Error:            err,
 			TracerouteResult: &tracerouteResult,
 		}
 	}
@@ -97,6 +79,14 @@ func Service(mux *http.ServeMux) {
 
 		select {
 		case res := <-resultChan:
+			res.Status = http.StatusOK
+
+			if !res.Success {
+				res.Status = http.StatusInternalServerError
+				res.ErrorMessage = res.Error.Error()
+				res.Error = nil
+			}
+
 			logic.WriteResponse(w, res)
 		case <-time.After(120 * time.Second):
 			logic.WriteResponse(w, &logic.Response{

@@ -14,7 +14,6 @@ type HttpResult struct {
 	URI          string   `json:"uri"`
 	StatusCode   int      `json:"status_code"`
 	ResponseTime float64  `json:"response_time"`
-	Error        string   `json:"error,omitempty"`
 	Redirects    []string `json:"redirects,omitempty"`
 	StatusCodes  []int    `json:"status_codes,omitempty"`
 	ResolvedIPs  []string `json:"resolved_ips,omitempty"`
@@ -32,7 +31,7 @@ func Http(ipOrDomain string) (HttpResult, error) {
 
 	resolvedIP, err := utils.ResolveIP(ipOrDomain)
 	if err != nil {
-		return HttpResult{URI: ipOrDomain, Error: err.Error(), ResolvedIPs: []string{resolvedIP}}, err
+		return HttpResult{URI: ipOrDomain, ResolvedIPs: []string{resolvedIP}}, err
 	}
 
 	start := time.Now()
@@ -45,13 +44,13 @@ func Http(ipOrDomain string) (HttpResult, error) {
 
 	req, err := http.NewRequest("GET", ipOrDomain, nil)
 	if err != nil {
-		return HttpResult{URI: ipOrDomain, Error: err.Error(), ResolvedIPs: []string{resolvedIP}}, err
+		return HttpResult{URI: ipOrDomain, ResolvedIPs: []string{resolvedIP}}, err
 	}
 	req.Header.Set("User-Agent", UserAgent)
 
 	result, err := handleRedirects(client, req)
 	if err != nil {
-		return HttpResult{URI: ipOrDomain, Error: err.Error(), ResolvedIPs: result.ResolvedIPs}, err
+		return HttpResult{URI: ipOrDomain, ResolvedIPs: result.ResolvedIPs}, err
 	}
 
 	responseTime := time.Since(start).Seconds()

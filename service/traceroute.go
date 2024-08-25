@@ -41,13 +41,13 @@ func Traceroute(address string) (TracerouteResult, error) {
 		return TracerouteResult{}, err
 	}
 
-	conn, err := net.ListenPacket("ip4:icmp", "0.0.0.0")
+	c, err := net.ListenPacket("ip4:icmp", "0.0.0.0")
 	if err != nil {
 		return TracerouteResult{}, err
 	}
-	defer conn.Close()
+	defer c.Close()
 
-	p := ipv4.NewPacketConn(conn)
+	p := ipv4.NewPacketConn(c)
 
 	var result TracerouteResult
 	targetReached := false
@@ -82,11 +82,11 @@ func Traceroute(address string) (TracerouteResult, error) {
 			}
 
 			rb := make([]byte, 1500)
-			if err := conn.SetReadDeadline(time.Now().Add(timeOutHop)); err != nil {
+			if err := c.SetReadDeadline(time.Now().Add(timeOutHop)); err != nil {
 				RTTs = append(RTTs, -1)
 				continue
 			}
-			n, a, err := conn.ReadFrom(rb)
+			n, a, err := c.ReadFrom(rb)
 			if err != nil {
 				RTTs = append(RTTs, -1)
 				continue

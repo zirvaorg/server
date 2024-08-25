@@ -10,6 +10,9 @@ type Response struct {
 	Status  int  `json:"status"`
 	Success bool `json:"success"`
 
+	Error        error  `json:"error,omitempty"`
+	ErrorMessage string `json:"error_message,omitempty"`
+
 	PingResult       *service.PingResult       `json:"ping_result,omitempty"`
 	HttpResult       *service.HttpResult       `json:"http_result,omitempty"`
 	ConnectionResult *service.ConnectionResult `json:"connection_result,omitempty"`

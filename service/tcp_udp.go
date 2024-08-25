@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"net"
 	"server/internal/utils"
 	"time"
@@ -10,7 +9,6 @@ import (
 type ConnectionResult struct {
 	IP           string  `json:"ip,omitempty"`
 	ResponseTime float64 `json:"response_time,omitempty"`
-	Error        string  `json:"error,omitempty"`
 }
 
 func TcpOrUdp(p string, op string) (ConnectionResult, error) {
@@ -21,7 +19,6 @@ func TcpOrUdp(p string, op string) (ConnectionResult, error) {
 		return ConnectionResult{
 			IP:           resolvedAddr,
 			ResponseTime: time.Since(start).Seconds(),
-			Error:        err.Error(),
 		}, err
 	}
 
@@ -34,7 +31,6 @@ func TcpOrUdp(p string, op string) (ConnectionResult, error) {
 		return ConnectionResult{
 			IP:           resolvedAddr,
 			ResponseTime: time.Since(start).Seconds(),
-			Error:        fmt.Sprintf("invalid operation: %s", op),
 		}, err
 	}
 
@@ -42,7 +38,6 @@ func TcpOrUdp(p string, op string) (ConnectionResult, error) {
 		return ConnectionResult{
 			IP:           resolvedAddr,
 			ResponseTime: time.Since(start).Seconds(),
-			Error:        err.Error(),
 		}, err
 	}
 
