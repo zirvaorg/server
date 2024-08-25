@@ -24,13 +24,13 @@ func Ping(ip string, count int) (PingResult, error) {
 
 	c, err := icmp.ListenPacket("ip4:icmp", "0.0.0.0")
 	if err != nil {
-		return PingResult{}, errors.New("ICMP listen error")
+		return PingResult{}, err
 	}
 	defer c.Close()
 
 	dst, err := net.ResolveIPAddr("ip4", ip)
 	if err != nil {
-		return PingResult{}, errors.New("IP resolve error")
+		return PingResult{}, err
 	}
 
 	rtts := make([]time.Duration, count)
@@ -51,17 +51,17 @@ func Ping(ip string, count int) (PingResult, error) {
 
 		start := time.Now()
 		if _, err := c.WriteTo(msgBytes, dst); err != nil {
-			return PingResult{}, errors.New("ICMP write error")
+			return PingResult{}, err
 		}
 
 		c.SetReadDeadline(time.Now().Add(2 * time.Second))
 		select {
 		case <-ctx.Done():
-			return PingResult{}, errors.New("ICMP timeout")
+			return PingResult{}, err
 		default:
 			_, _, err := c.ReadFrom(make([]byte, 1500))
 			if err != nil {
-				return PingResult{}, errors.New("ICMP read error")
+				return PingResult{}, err
 			}
 			rtts[i] = time.Since(start)
 		}
