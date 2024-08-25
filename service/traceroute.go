@@ -36,10 +36,6 @@ func (hop *TracerouteHop) resolveHostname(ip string) {
 }
 
 func Traceroute(address string) (TracerouteResult, error) {
-	icmpMutex.Lock()
-	defer icmpMutex.Unlock()
-
-	// @todo: resolve hostname containing protocol (http://, https://)
 	ipAddr, err := net.ResolveIPAddr("ip4", address)
 	if err != nil {
 		return TracerouteResult{}, err
@@ -49,29 +45,9 @@ func Traceroute(address string) (TracerouteResult, error) {
 	if err != nil {
 		return TracerouteResult{}, err
 	}
-	defer func(conn net.PacketConn) {
-		err := conn.Close()
-		if err != nil {
-			return
-		}
-	}(conn)
+	defer conn.Close()
 
 	p := ipv4.NewPacketConn(conn)
-
-	msg := icmp.Message{
-		Type: ipv4.ICMPTypeEcho,
-		Code: 0,
-		Body: &icmp.Echo{
-			ID:   rand.New(rand.NewSource(time.Now().UnixNano())).Intn(0xffff),
-			Seq:  1,
-			Data: []byte(EchoData),
-		},
-	}
-
-	msgBytes, err := msg.Marshal(nil)
-	if err != nil {
-		return TracerouteResult{}, err
-	}
 
 	var result TracerouteResult
 	targetReached := false
@@ -84,6 +60,22 @@ func Traceroute(address string) (TracerouteResult, error) {
 				RTTs = append(RTTs, -1)
 				continue
 			}
+
+			msg := icmp.Message{
+				Type: ipv4.ICMPTypeEcho,
+				Code: 0,
+				Body: &icmp.Echo{
+					ID:   rand.Intn(65000),
+					Seq:  probe,
+					Data: []byte(EchoData),
+				},
+			}
+			msgBytes, err := msg.Marshal(nil)
+			if err != nil {
+				RTTs = append(RTTs, -1)
+				continue
+			}
+
 			if _, err := p.WriteTo(msgBytes, nil, ipAddr); err != nil {
 				RTTs = append(RTTs, -1)
 				continue
@@ -117,7 +109,6 @@ func Traceroute(address string) (TracerouteResult, error) {
 			default:
 				RTTs = append(RTTs, -1)
 			}
-
 		}
 
 		for len(RTTs) < numProbes {

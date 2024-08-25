@@ -5,12 +5,10 @@ import (
 	"errors"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
+	"math/rand"
 	"net"
-	"sync"
 	"time"
 )
-
-var icmpMutex sync.Mutex
 
 type PingResult struct {
 	IP     string  `json:"ip"`
@@ -20,9 +18,6 @@ type PingResult struct {
 }
 
 func Ping(ip string, count int) (PingResult, error) {
-	icmpMutex.Lock()
-	defer icmpMutex.Unlock()
-
 	if count <= 0 {
 		return PingResult{}, errors.New("count should be greater than 0")
 	}
@@ -31,12 +26,7 @@ func Ping(ip string, count int) (PingResult, error) {
 	if err != nil {
 		return PingResult{}, errors.New("ICMP listen error")
 	}
-	defer func(c *icmp.PacketConn) {
-		err := c.Close()
-		if err != nil {
-			return
-		}
-	}(c)
+	defer c.Close()
 
 	dst, err := net.ResolveIPAddr("ip4", ip)
 	if err != nil {
@@ -49,9 +39,10 @@ func Ping(ip string, count int) (PingResult, error) {
 
 	for i := 0; i < count; i++ {
 		msg := icmp.Message{
-			Type: ipv4.ICMPTypeEcho, Code: 0,
+			Type: ipv4.ICMPTypeEcho,
+			Code: 1,
 			Body: &icmp.Echo{
-				ID:   i,
+				ID:   rand.Intn(65000),
 				Seq:  i,
 				Data: []byte(EchoData),
 			},

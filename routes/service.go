@@ -6,6 +6,7 @@ import (
 	"server/internal/utils"
 	"server/middleware"
 	"server/service"
+	"sync"
 	"time"
 )
 
@@ -17,11 +18,16 @@ var serviceList = map[string]bool{
 	"traceroute": true,
 }
 
+var mu sync.Mutex
+
 func handleServiceOperation(op, p string, resultChan chan<- *logic.Response) {
 	defer close(resultChan)
 
 	switch op {
 	case "ping":
+		mu.Lock()
+		defer mu.Unlock()
+
 		resolvedIP, err := utils.ResolveIP(p)
 		if err != nil {
 			resultChan <- &logic.Response{
@@ -63,6 +69,9 @@ func handleServiceOperation(op, p string, resultChan chan<- *logic.Response) {
 		}
 
 	case "traceroute":
+		mu.Lock()
+		defer mu.Unlock()
+
 		tracerouteResult, err := service.Traceroute(p)
 		resultChan <- &logic.Response{
 			Status:           http.StatusOK,
