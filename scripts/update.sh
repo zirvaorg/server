@@ -10,7 +10,7 @@ echo -e "${YELLOW}[info] checking for new version of zirva...${NC}"
 INSTALL_DIR="/opt/zirva"
 
 if [ -f "$INSTALL_DIR/zirva" ]; then
-  CURRENT_VERSION=$("$INSTALL_DIR/zirva" --version)
+  CURRENT_VERSION=$("$INSTALL_DIR/zirva" -v)
 else
   echo -e "${RED}[err] zirva is not installed.${NC}"
   exit 1
