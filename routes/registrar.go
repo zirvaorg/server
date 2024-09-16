@@ -1,13 +1,19 @@
 package routes
 
 import (
+	"github.com/zirvaorg/ratelimit"
+	"github.com/zirvaorg/ratelimit/memstore"
 	"net/http"
 	"server/internal/logic"
 	"server/internal/msg"
 )
 
-func Registrar(mux *http.ServeMux) {
-	mux.HandleFunc("GET /registrar", func(w http.ResponseWriter, r *http.Request) {
+func keyFunc(r *http.Request) string {
+	return r.RemoteAddr
+}
+
+func Registrar(mux *http.ServeMux, store *memstore.MemStore) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t := r.URL.Query().Get("t")
 		z := r.URL.Query().Get("z")
 
@@ -31,4 +37,6 @@ func Registrar(mux *http.ServeMux) {
 		w.WriteHeader(http.StatusOK)
 		logic.Output("ok", msg.RegistrarOk)
 	})
+
+	mux.Handle("/registrar", ratelimit.Middleware(store, handler, keyFunc))
 }
