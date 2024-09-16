@@ -16,7 +16,7 @@ else
   exit 1
 fi
 
-LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/backend/releases/latest"
+LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/server/releases/latest"
 LATEST_VERSION=$(curl -s $LATEST_RELEASE_URL | grep '"tag_name":' | cut -d '"' -f 4)
 
 if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then

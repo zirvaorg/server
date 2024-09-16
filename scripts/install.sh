@@ -29,7 +29,7 @@ else
   exit 1
 fi
 
-LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/backend/releases/latest"
+LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/server/releases/latest"
 PACKAGE_URL=$(curl -s $LATEST_RELEASE_URL | grep "browser_download_url.*$ARCH_TYPE" | cut -d '"' -f 4)
 
 if [ -z "$PACKAGE_URL" ]; then
@@ -58,7 +58,7 @@ echo -e "${YELLOW}[info] reloading your bash profile...${NC}"
 source ~/.bashrc
 
 echo -e "${YELLOW}[info] downloading update.sh...${NC}"
-UPDATE_SCRIPT_URL="https://raw.githubusercontent.com/zirvaorg/backend/main/scripts/update.sh"
+UPDATE_SCRIPT_URL="https://raw.githubusercontent.com/zirvaorg/server/main/scripts/update.sh"
 curl -L -o "$INSTALL_DIR/update.sh" "$UPDATE_SCRIPT_URL"
 chmod +x "$INSTALL_DIR/update.sh"
 
