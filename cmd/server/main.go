@@ -4,18 +4,27 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"server/internal/logic"
 	"server/internal/msg"
 	"server/internal/server"
 )
 
+const CurrentVersion = "0.0.1"
+
 var DefaultServerPort = "9479"
 
 func init() {
-	fmt.Println(msg.Logo)
-
+	v := flag.Bool("v", false, "show version")
 	flag.StringVar(&DefaultServerPort, "p", DefaultServerPort, "server listen port")
 	flag.Parse()
+
+	if *v {
+		fmt.Println(CurrentVersion)
+		os.Exit(0)
+	}
+
+	fmt.Println(msg.Logo)
 }
 
 func main() {
