@@ -12,12 +12,12 @@ PORT_PARAM=""
 
 if pgrep -f "$INSTALL_DIR/zirva" > /dev/null; then
   echo -e "${YELLOW}[info] zirva is currently running. retrieving port parameter...${NC}"
-  PORT_PARAM=$(ps aux | grep "$INSTALL_DIR/zirva" | grep -v grep | awk '{for(i=11;i<=NF;i++) if($i ~ /-p/) print $i}')
+  PORT_PARAM=$(ps aux | grep "$INSTALL_DIR/zirva" | grep -v grep | awk '{for(i=1;i<=NF;i++) if($i ~ /^-p$/) print $(i+1)}')
 else
   echo -e "${RED}[err] zirva is not running.${NC}"
 fi
 
-CURRENT_VERSION=$("$INSTALL_DIR/zirva" --version 2>/dev/null)
+CURRENT_VERSION=$("$INSTALL_DIR/zirva" -v 2>/dev/null)
 
 if [ -z "$CURRENT_VERSION" ]; then
   echo -e "${RED}[err] unable to determine current version.${NC}"
@@ -67,7 +67,7 @@ rm -rf "$TEMP_DIR"
 
 if [ -n "$PORT_PARAM" ]; then
   echo -e "${YELLOW}[info] starting the new version of zirva with port parameter: $PORT_PARAM${NC}"
-  $INSTALL_DIR/zirva $PORT_PARAM &
+  $INSTALL_DIR/zirva -p $PORT_PARAM &
 else
   echo -e "${YELLOW}[info] starting the new version of zirva...${NC}"
   $INSTALL_DIR/zirva &
