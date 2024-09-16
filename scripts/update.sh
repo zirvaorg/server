@@ -8,15 +8,23 @@ NC='\033[0m'
 echo -e "${YELLOW}[info] checking for new version of zirva...${NC}"
 
 INSTALL_DIR="/opt/zirva"
+PORT_PARAM=""
 
-if [ -f "$INSTALL_DIR/zirva" ]; then
-  CURRENT_VERSION=$("$INSTALL_DIR/zirva" -v)
+if pgrep -f "$INSTALL_DIR/zirva" > /dev/null; then
+  echo -e "${YELLOW}[info] zirva is currently running. retrieving port parameter...${NC}"
+  PORT_PARAM=$(ps aux | grep "$INSTALL_DIR/zirva" | grep -v grep | awk '{for(i=11;i<=NF;i++) if($i ~ /-p/) print $i}')
 else
-  echo -e "${RED}[err] zirva is not installed.${NC}"
+  echo -e "${RED}[err] zirva is not running.${NC}"
+fi
+
+CURRENT_VERSION=$("$INSTALL_DIR/zirva" --version 2>/dev/null)
+
+if [ -z "$CURRENT_VERSION" ]; then
+  echo -e "${RED}[err] unable to determine current version.${NC}"
   exit 1
 fi
 
-LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/server/releases/latest"
+LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/backend/releases/latest"
 LATEST_VERSION=$(curl -s $LATEST_RELEASE_URL | grep '"tag_name":' | cut -d '"' -f 4)
 
 if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
@@ -57,7 +65,12 @@ chmod +x "$INSTALL_DIR/zirva"
 
 rm -rf "$TEMP_DIR"
 
-echo -e "${YELLOW}[info] starting the new version of zirva...${NC}"
-$INSTALL_DIR/zirva &
+if [ -n "$PORT_PARAM" ]; then
+  echo -e "${YELLOW}[info] starting the new version of zirva with port parameter: $PORT_PARAM${NC}"
+  $INSTALL_DIR/zirva $PORT_PARAM &
+else
+  echo -e "${YELLOW}[info] starting the new version of zirva...${NC}"
+  $INSTALL_DIR/zirva &
+fi
 
 echo -e "${GREEN}[success] update completed successfully! running new version...${NC}"
