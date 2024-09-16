@@ -21,9 +21,9 @@ fi
 
 ARCH=$(uname -m)
 if [ "$ARCH" = "x86_64" ]; then
-  ARCH_TYPE="64bit"
+  ARCH_TYPE="x86_64"
 elif [ "$ARCH" = "i686" ] || [ "$ARCH" = "i386" ]; then
-  ARCH_TYPE="32bit"
+  ARCH_TYPE="i386"
 else
   echo -e "${RED}[err] unsupported architecture: $ARCH${NC}"
   exit 1
