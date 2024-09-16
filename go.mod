@@ -1,9 +1,10 @@
 module server
 
-go 1.22.6
+go 1.23.0
 
 require (
 	github.com/fatih/color v1.17.0
+	github.com/zirvaorg/ratelimit v0.0.0-20240916171134-817f62e160b0
 	golang.org/x/net v0.28.0
 )
 
