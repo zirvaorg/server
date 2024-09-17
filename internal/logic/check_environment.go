@@ -2,6 +2,7 @@ package logic
 
 import (
 	"errors"
+	"fmt"
 	"net"
 	"os/user"
 	"server/internal/msg"
@@ -13,7 +14,7 @@ func CheckEnvironment(p string) error {
 	}
 
 	if !portIsAvailable(p) {
-		return errors.New(msg.ServerPortInUse)
+		return errors.New(fmt.Sprintf(msg.ServerPortInUse, p))
 	}
 
 	return nil
