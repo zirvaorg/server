@@ -19,7 +19,7 @@ fi
 
 if [ -f "$INSTALL_DIR/zirva" ]; then
   echo -e "${GREEN}[info] zirva is already installed at $INSTALL_DIR.${NC}"
-  exit 0
+  exit 1
 fi
 
 ARCH=$(uname -m)

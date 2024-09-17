@@ -33,7 +33,7 @@ fi
 
 if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
   echo -e "${GREEN}[success] you are already using the latest version: $CURRENT_VERSION${NC}"
-  exit 0
+  exit 1
 else
   echo -e "${YELLOW}[info] new version available: $LATEST_VERSION. updating...${NC}"
 fi
