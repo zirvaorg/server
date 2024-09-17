@@ -10,7 +10,7 @@ echo -e "${YELLOW}[info] checking for new version of zirva...${NC}"
 INSTALL_DIR="/opt/zirva"
 PORT_PARAM=""
 
-if pgrep -f "$INSTALL_DIR/zirva" > /dev/null; then
+if pgrep -f "$INSTALL_DIR/zirva"; then
   echo -e "${YELLOW}[info] zirva is currently running. retrieving port parameter...${NC}"
   PORT_PARAM=$(ps aux | grep "$INSTALL_DIR/zirva" | grep -v grep | awk '{for(i=1;i<=NF;i++) if($i ~ /^-p$/) print $(i+1)}')
 else
