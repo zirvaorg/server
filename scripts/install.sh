@@ -8,7 +8,7 @@ NC='\033[0m'
 
 INSTALL_DIR="/opt/zirva"
 LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/server/releases/latest"
-UPDATE_SCRIPT_URL="https://raw.githubusercontent.com/zirvaorg/server/main/scripts/update.sh"
+UPDATE_SCRIPT_URL="https://zirva.org/update.sh"
 
 echo -e "${BLUE}... zirva server installer ...${NC}"
 
