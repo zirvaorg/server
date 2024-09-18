@@ -13,7 +13,7 @@ This server package is specially developed for zirva.org. With this package you 
 
 ## Installation
 ```bash
-sudo wget -O - https://zirva.org/install.sh | sudo bash
+sudo wget -q -O - https://zirva.org/install.sh | sudo bash
 ```
 
 ## Getting Started
