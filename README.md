@@ -8,7 +8,7 @@ This server package is specially developed for zirva.org. With this package you 
 
 ## Getting Started
 1. Start the server with `zirva` command. You can specify a port with the `-p PORT` argument.
-2. Add the register url in the add server section in the portal.
+2. Add the register url in the add server section in the [portal](https://portal.zirva.org).
 3. Everything is ready!
 
 ## Installation
