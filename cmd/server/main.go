@@ -24,7 +24,7 @@ func init() {
 		os.Exit(0)
 	}
 
-	fmt.Println(msg.Logo)
+	fmt.Printf(msg.Logo, CurrentVersion)
 }
 
 func main() {

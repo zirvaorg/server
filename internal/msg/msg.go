@@ -1,7 +1,8 @@
 package msg
 
 const (
-	Logo = `╔──────────────────────────────────────╗
+	Logo = `
+╔──────────────────────────────────────╗
 │ ███████╗██╗██████╗ ██╗   ██╗ █████╗  │
 │ ╚══███╔╝██║██╔══██╗██║   ██║██╔══██╗ │
 │   ███╔╝ ██║██████╔╝██║   ██║███████║ │
@@ -9,7 +10,8 @@ const (
 │ ███████╗██║██║  ██║ ╚████╔╝ ██║  ██║ │
 │ ╚══════╝╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝  ╚═╝ │
 ╚──────────────────────────────────────╝
-zirva server v1.0.0 (https://zirva.org)`
+zirva server v%s (https://zirva.org)
+`
 
 	ServerRunning       = "server is running on port %s"
 	PrivilegesErr       = "you must run the server as root!"
