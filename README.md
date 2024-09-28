@@ -1,6 +1,5 @@
-<div align="center"><img src="https://portal.zirva.org/resources/img/logo.svg" alt="zirva.org" width="150" /></div>
+<div align="center"><img src="https://portal.zirva.org/resources/img/logo.svg" alt="zirva.org" width="150" /> <h1>Zirva Backbone Server</h1></div>
 
-# Zirva Backbone Server
 This server package is specially developed for zirva.org. With this package you can add backbone on zirva.org and start earning points.
 
 ![goreport](https://goreportcard.com/badge/github.com/zirvaorg/server)
