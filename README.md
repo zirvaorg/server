@@ -1,6 +1,6 @@
-<div align="center"><img src="https://portal.zirva.org/resources/img/logo.svg" alt="zirva.org" width="150" /> <h1>Zirva Backbone Server</h1></div>
+<div align="center"><img src="https://portal.zirva.org/resources/img/logo.svg" alt="zirva.org" width="150" /> <h1>Zirva Community Server</h1></div>
 
-This server package is specially developed for zirva.org. With this package you can add backbone on zirva.org and start earning points.
+This server package is specially developed for zirva.org. With this package, you can add a community server to zirva.org and start earning points.
 
 ![goreport](https://goreportcard.com/badge/github.com/zirvaorg/server)
 ![license](https://badgen.net/github/license/zirvaorg/server)
