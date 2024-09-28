@@ -16,6 +16,11 @@ This server package is specially developed for zirva.org. With this package you 
 sudo wget -q -O - https://zirva.org/install.sh | sudo bash
 ```
 
+## Uninstallation
+```bash
+sudo wget -q -O - https://zirva.org/uninstall.sh | sudo bash
+```
+
 ## Getting Started
 1. Start the server with `zirva` command. You can specify a port with the `-p PORT` argument.
 2. Add the register url in the add server section in the portal.
