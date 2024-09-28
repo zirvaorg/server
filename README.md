@@ -1,4 +1,4 @@
-# Zirva Server
+# Zirva Backbone Server
 This server package is specially developed for zirva.org. With this package you can add backbone on zirva.org and start earning points.
 
 ![goreport](https://goreportcard.com/badge/github.com/zirvaorg/server)
@@ -12,13 +12,9 @@ This server package is specially developed for zirva.org. With this package you 
 - [x] traceroute
 
 ## Installation
+You can install the server by running the following command.
 ```bash
 sudo wget -q -O - https://zirva.org/install.sh | sudo bash
-```
-
-## Uninstallation
-```bash
-sudo wget -q -O - https://zirva.org/uninstall.sh | sudo bash
 ```
 
 ## Getting Started
@@ -26,8 +22,20 @@ sudo wget -q -O - https://zirva.org/uninstall.sh | sudo bash
 2. Add the register url in the add server section in the portal.
 
 ## Requirements
-- OS: `Linux`
-- Architecture: `x86_64`, `i386`, `arm64`
+
+| Requirement | Details                           |
+|-------------|-----------------------------------|
+| OS          | Linux (`x86_64`, `i386`, `arm64`) |
+| curl        | **Required**                      |
+| crontab     | **Required**                      |
+| systemctl   | Optional                          |
+
+## Remove Installation
+If you want to remove the server, you can run the following command.
+
+```bash
+sudo wget -q -O - https://zirva.org/uninstall.sh | sudo bash
+```
 
 ## Contributing
 We welcome contributions from the community! You can open PRs and issues to help us improve the project.
