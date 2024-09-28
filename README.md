@@ -1,6 +1,4 @@
-<div style="display:grid;justify-content:center">
-    <img src="https://portal.zirva.org/resources/img/logo.svg" alt="zirva.org" width="150"/>
-</div>
+<div align="center"><img src="https://portal.zirva.org/resources/img/logo.svg" alt="zirva.org" width="200" /></div>
 
 # Zirva Backbone Server
 This server package is specially developed for zirva.org. With this package you can add backbone on zirva.org and start earning points.
