@@ -51,34 +51,32 @@ fi
 
 TEMP_DIR=$(mktemp -d)
 PACKAGE_NAME=$(basename "$PACKAGE_URL")
-echo -e "${YELLOW}[info] downloading the package...${NC}"
+echo -e "${BLUE}[info] downloading the package...${NC}"
 curl -sL -o "$TEMP_DIR/$PACKAGE_NAME" "$PACKAGE_URL"
 
 mkdir -p "$INSTALL_DIR"
-echo -e "${YELLOW}[info] installing the package to $INSTALL_DIR...${NC}"
+echo -e "${BLUE}[info] installing the package to $INSTALL_DIR...${NC}"
 mv "$TEMP_DIR/$PACKAGE_NAME" "$INSTALL_DIR/zirva"
 chmod +x "$INSTALL_DIR/zirva"
 
 rm -rf "$TEMP_DIR"
 
-echo -e "${YELLOW}[info] creating symlink for zirva in /usr/bin...${NC}"
+echo -e "${BLUE}[info] creating symlink for zirva in /usr/bin...${NC}"
 ln -sf "$INSTALL_DIR/zirva" /usr/bin/zirva
 
-echo -e "${YELLOW}[info] reloading your bash profile...${NC}"
+echo -e "${BLUE}[info] reloading your bash profile...${NC}"
 source ~/.bashrc
 
-echo -e "${YELLOW}[info] downloading update.sh...${NC}"
+echo -e "${BLUE}[info] downloading update.sh...${NC}"
 curl -sL -o "$INSTALL_DIR/update.sh" "$UPDATE_SCRIPT_URL"
 chmod +x "$INSTALL_DIR/update.sh"
 
-echo -e "${YELLOW}[info] checking if update.sh is already in crontab...${NC}"
+echo -e "${BLUE}[info] checking if update.sh is already in crontab...${NC}"
 CRON_JOB="0 2 * * * $INSTALL_DIR/update.sh >> $INSTALL_DIR/update.log 2>&1"
 (crontab -l 2>/dev/null | grep -q "$INSTALL_DIR/update.sh") || (crontab -l 2>/dev/null; echo "$CRON_JOB") | crontab -
 
-echo -e "${GREEN}[success] installation and cronjob setup completed successfully! running zirva...${NC}"
-
 if command -v systemctl &> /dev/null; then
-  echo -e "${YELLOW}[info] creating systemd service file...${NC}"
+  echo -e "${BLUE}[info] creating systemd service file...${NC}"
   SERVICE_FILE="/etc/systemd/system/zirva.service"
   cat <<EOF > $SERVICE_FILE
 [Unit]
@@ -95,13 +93,14 @@ RestartSec=10
 [Install]
 WantedBy=multi-user.target
 EOF
-  echo -e "${YELLOW}[info] reloading systemd daemon...${NC}"
+  echo -e "${BLUE}[info] reloading systemd daemon...${NC}"
   systemctl daemon-reload
 
-  echo -e "${YELLOW}[info] enabling zirva service to start on boot...${NC}"
+  echo -e "${BLUE}[info] enabling zirva service to start on boot...${NC}"
   systemctl enable zirva.service
 else
-  echo -e "${YELLOW}[warning] systemd is not available. zirva will not start on boot.${NC}"
+  echo -e "${YELLOW}[warn] systemd is not available. zirva will not start on boot.${NC}"
 fi
 
+echo -e "${GREEN}[ok] installation completed successfully! running zirva...${NC}"
 $INSTALL_DIR/zirva
