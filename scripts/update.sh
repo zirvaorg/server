@@ -69,7 +69,7 @@ fi
 TEMP_DIR=$(mktemp -d)
 PACKAGE_NAME=$(basename "$PACKAGE_URL")
 echo -e "${YELLOW}[info] downloading the latest package...${NC}"
-curl -L -o "$TEMP_DIR/$PACKAGE_NAME" "$PACKAGE_URL"
+curl -sL -o "$TEMP_DIR/$PACKAGE_NAME" "$PACKAGE_URL"
 
 echo -e "${YELLOW}[info] installing the new version to $INSTALL_DIR...${NC}"
 mv "$TEMP_DIR/$PACKAGE_NAME" "$INSTALL_DIR/zirva"
@@ -79,10 +79,9 @@ rm -rf "$TEMP_DIR"
 
 echo -e "${GREEN}[success] update completed successfully! running new version...\n${NC}"
 echo -e "${YELLOW}[info] starting the new version of zirva...${NC}"
-clear
 
 if [ -n "$ZIRVA_PORT" ]; then
-  $INSTALL_DIR/zirva -p "$ZIRVA_PORT" &
+  nohup $INSTALL_DIR/zirva -p "$ZIRVA_PORT" &>$INSTALL_DIR/zirva.log &
 else
-  $INSTALL_DIR/zirva &
+  nohup $INSTALL_DIR/zirva &>$INSTALL_DIR/zirva.log &
 fi
