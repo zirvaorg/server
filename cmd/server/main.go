@@ -10,7 +10,7 @@ import (
 	"server/internal/server"
 )
 
-const CurrentVersion = "0.0.1"
+const CurrentVersion = "0.0.2"
 
 var DefaultServerPort = "9479"
 

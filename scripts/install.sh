@@ -6,7 +6,7 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-INSTALL_DIR="/opt/zirva"
+INSTALL_DIR="/usr/bin/zirva-app"
 LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/server/releases/latest"
 UPDATE_SCRIPT_URL="https://zirva.org/update.sh"
 
