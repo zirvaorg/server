@@ -7,7 +7,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 ZIRVA_PORT=""
-INSTALL_DIR="/usr/bin/zirva-app"
+INSTALL_DIR="/opt/zirva"
 LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/server/releases/latest"
 LATEST_VERSION=$(curl -s $LATEST_RELEASE_URL | grep '"tag_name":' | cut -d '"' -f 4)
 

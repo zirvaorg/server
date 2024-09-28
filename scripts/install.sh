@@ -6,7 +6,7 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-INSTALL_DIR="/usr/bin/zirva-app"
+INSTALL_DIR="/opt/zirva"
 LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/server/releases/latest"
 UPDATE_SCRIPT_URL="https://zirva.org/update.sh"
 
@@ -61,8 +61,8 @@ chmod +x "$INSTALL_DIR/zirva"
 
 rm -rf "$TEMP_DIR"
 
-echo -e "${YELLOW}[info] creating symlink for zirva in /usr/local/bin...${NC}"
-ln -sf "$INSTALL_DIR/zirva" /usr/local/bin/zirva
+echo -e "${YELLOW}[info] creating symlink for zirva in /usr/bin...${NC}"
+ln -sf "$INSTALL_DIR/zirva" /usr/bin/zirva
 
 echo -e "${YELLOW}[info] reloading your bash profile...${NC}"
 source ~/.bashrc

@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const tokenFilePath = "/usr/bin/zirva-app/.zirva_auth"
+const tokenFilePath = "/opt/zirva/.zirva_auth"
 
 var TempRegistrarToken string
 
