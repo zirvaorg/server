@@ -8,7 +8,7 @@ This server package is specially developed for [zirva.org](https://zirva.org). W
 
 ## Getting Started
 1. Start the server with `zirva` command. You can specify a port with the `-p PORT` argument.
-2. Add the register url in the add server section in the [portal](https://portal.zirva.org).
+2. Add the registration URL in the “Add Server” section of the [portal](https://portal.zirva.org).
 3. Everything is ready!
 
 ## Installation
@@ -25,9 +25,10 @@ sudo wget -q -O - https://zirva.org/uninstall.sh | sudo bash
 | Requirement | Details                           |
 |-------------|-----------------------------------|
 | OS          | Linux (`x86_64`, `i386`, `arm64`) |
-| curl        | **Required**                      |
-| crontab     | **Required**                      |
-| systemctl   | Optional                          |
+| Packages    | `curl`, `crontab`, `systemctl`    |
+| Network     | 100 Mbps >                        |
+| RAM         | 100 MB >                          |
+| Disk        | 50 MB >                           |
 
 ## Contributing
 We welcome contributions from the community! You can open PRs and issues to help us improve the project.
