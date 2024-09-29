@@ -27,7 +27,7 @@ func handleServiceOperation(op, p string, resultChan chan<- *logic.Response) {
 		mu.Lock()
 		defer mu.Unlock()
 
-		ping, err := service.Ping(p, 10)
+		ping, err := service.Ping(p, 1)
 		resultChan <- &logic.Response{
 			Success:    err == nil,
 			Error:      err,
