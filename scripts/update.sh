@@ -82,10 +82,8 @@ chmod +x "$INSTALL_DIR/zirva"
 
 rm -rf "$TEMP_DIR"
 
-echo -e "${GREEN}[ok] update completed successfully! starting new version...\n${NC}"
-
+echo -e "${GREEN}[ok] update completed successfully! starting new version...${NC}"
 if command -v systemctl &> /dev/null; then
-  echo -e "${BLUE}[info] starting zirva service...${NC}"
   systemctl start zirva.service
 else
   nohup $INSTALL_DIR/zirva &>$INSTALL_DIR/zirva.log &
