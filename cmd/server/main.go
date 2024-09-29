@@ -10,11 +10,12 @@ import (
 	"server/internal/server"
 )
 
-const CurrentVersion = "0.0.5"
+const CurrentVersion = "0.0.6"
 const ServerPort = "9479"
 
 func init() {
 	v := flag.Bool("v", false, "show version")
+	flag.Parse()
 
 	if *v {
 		fmt.Println(CurrentVersion)
