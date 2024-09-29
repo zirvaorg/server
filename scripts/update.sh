@@ -44,7 +44,11 @@ if [ -z "$ZIRVA_PID" ]; then
   echo -e "${GREEN}[ok] zirva is not running.${NC}"
 else
   ZIRVA_PORT=$(ps -fp $ZIRVA_PID | awk '/zirva/ {for(i=1;i<=NF;i++) if($i=="-p") print $(i+1)}' | sort -u | tr -d '\n')
-  echo -e "${BLUE}[info] zirva is running on port $ZIRVA_PORT.${NC}"
+  if [ -n "$ZIRVA_PORT" ]; then
+    echo -e "${BLUE}[info] zirva is running on port $ZIRVA_PORT.${NC}"
+  else
+    echo -e "${BLUE}[info] zirva is running.${NC}"
+  fi
   echo -e "${BLUE}[info] stopping current zirva process...${NC}"
   kill -15 $ZIRVA_PID
 fi
