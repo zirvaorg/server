@@ -99,8 +99,6 @@ RestartSec=10
 [Install]
 WantedBy=multi-user.target
 EOF
-  echo -e "${BLUE}[info] reloading systemd daemon...${NC}"
-  systemctl daemon-reload
 
   echo -e "${BLUE}[info] enabling zirva service to start on boot...${NC}"
   systemctl enable zirva.service
