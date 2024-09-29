@@ -6,7 +6,6 @@ BLUE='\033[1;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-ZIRVA_PORT=""
 INSTALL_DIR="/opt/zirva"
 LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/server/releases/latest"
 LATEST_VERSION=$(curl -s $LATEST_RELEASE_URL | grep '"tag_name":' | cut -d '"' -f 4)
@@ -38,19 +37,21 @@ else
   echo -e "${YELLOW}[warn] new version available: $LATEST_VERSION. updating...${NC}"
 fi
 
-echo -e "${BLUE}[info] checking if zirva is running...${NC}"
+echo -e "${BLUE}[info] checking if zirva is running on process...${NC}"
 ZIRVA_PID=$(pgrep -f "zirva")
 if [ -z "$ZIRVA_PID" ]; then
   echo -e "${GREEN}[ok] zirva is not running.${NC}"
 else
-  ZIRVA_PORT=$(ps -fp $ZIRVA_PID | awk '/zirva/ {for(i=1;i<=NF;i++) if($i=="-p") print $(i+1)}' | sort -u | tr -d '\n')
-  if [ -n "$ZIRVA_PORT" ]; then
-    echo -e "${BLUE}[info] zirva is running on port $ZIRVA_PORT.${NC}"
-  else
-    echo -e "${BLUE}[info] zirva is running.${NC}"
-  fi
   echo -e "${BLUE}[info] stopping current zirva process...${NC}"
   kill -15 $ZIRVA_PID
+fi
+
+echo -e "${BLUE}[info] checking if zirva is running on service...${NC}"
+if command -v systemctl &> /dev/null; then
+  echo -e "${BLUE}[info] stopping zirva service...${NC}"
+  systemctl stop zirva.service
+else
+  echo -e "${YELLOW}[warn] systemctl is not available. skipping service stop.${NC}"
 fi
 
 ARCH=$(uname -m)
@@ -81,9 +82,11 @@ chmod +x "$INSTALL_DIR/zirva"
 
 rm -rf "$TEMP_DIR"
 
-echo -e "${GREEN}[ok] update completed successfully! running new version...\n${NC}"
-if [ -n "$ZIRVA_PORT" ]; then
-  nohup $INSTALL_DIR/zirva -p "$ZIRVA_PORT" &>$INSTALL_DIR/zirva.log &
+echo -e "${GREEN}[ok] update completed successfully! starting new version...\n${NC}"
+
+if command -v systemctl &> /dev/null; then
+  echo -e "${BLUE}[info] starting zirva service...${NC}"
+  systemctl start zirva.service
 else
   nohup $INSTALL_DIR/zirva &>$INSTALL_DIR/zirva.log &
 fi

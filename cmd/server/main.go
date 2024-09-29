@@ -11,13 +11,10 @@ import (
 )
 
 const CurrentVersion = "0.0.4"
-
-var DefaultServerPort = "9479"
+const ServerPort = "9479"
 
 func init() {
 	v := flag.Bool("v", false, "show version")
-	flag.StringVar(&DefaultServerPort, "p", DefaultServerPort, "server listen port")
-	flag.Parse()
 
 	if *v {
 		fmt.Println(CurrentVersion)
@@ -28,7 +25,7 @@ func init() {
 }
 
 func main() {
-	err := logic.CheckEnvironment(DefaultServerPort)
+	err := logic.CheckEnvironment(ServerPort)
 	if err != nil {
 		logic.Output("error", err.Error())
 		return
@@ -38,5 +35,5 @@ func main() {
 	server.SetupRoutes(mux)
 
 	middlewareMux := server.SetupMiddleware(mux)
-	server.StartServer(middlewareMux, DefaultServerPort)
+	server.StartServer(middlewareMux, ServerPort)
 }

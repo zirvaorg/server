@@ -9,6 +9,7 @@ NC='\033[0m'
 INSTALL_DIR="/opt/zirva"
 LATEST_RELEASE_URL="https://api.github.com/repos/zirvaorg/server/releases/latest"
 UPDATE_SCRIPT_URL="https://zirva.org/update.sh"
+SERVER_PORT=9479
 
 echo -e "${BLUE}... zirva server installer ...${NC}"
 
@@ -18,17 +19,22 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 if ! command -v curl &> /dev/null; then
-  echo -e "${RED}[err] curl is not installed. Please install curl and try again.${NC}"
+  echo -e "${RED}[err] curl is not installed. please install curl and try again.${NC}"
   exit 1
 fi
 
 if ! command -v crontab &> /dev/null; then
-  echo -e "${RED}[err] crontab is not installed. Please install crontab and try again.${NC}"
+  echo -e "${RED}[err] crontab is not installed. please install crontab and try again.${NC}"
   exit 1
 fi
 
 if [ -f "$INSTALL_DIR/zirva" ]; then
   echo -e "${GREEN}[info] zirva is already installed at $INSTALL_DIR.${NC}"
+  exit 1
+fi
+
+if lsof -i:$SERVER_PORT &> /dev/null; then
+  echo -e "${RED}[err] port $SERVER_PORT is already in use. please free the port and try again.${NC}"
   exit 1
 fi
 
