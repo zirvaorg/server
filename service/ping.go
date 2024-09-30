@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
 	"math/rand"
@@ -12,10 +13,11 @@ import (
 )
 
 type PingResult struct {
-	IP     string  `json:"ip"`
-	MinRTT float64 `json:"min_rtt"`
-	AvgRTT float64 `json:"avg_rtt"`
-	MaxRTT float64 `json:"max_rtt"`
+	IP      string  `json:"ip"`
+	Request string  `json:"request"`
+	MinRTT  float64 `json:"min_rtt"`
+	AvgRTT  float64 `json:"avg_rtt"`
+	MaxRTT  float64 `json:"max_rtt"`
 }
 
 func Ping(domain string, count int) (PingResult, error) {
@@ -39,14 +41,15 @@ func Ping(domain string, count int) (PingResult, error) {
 		return PingResult{}, err
 	}
 
-	rtts := make([]time.Duration, count)
+	rtts := make([]time.Duration, 0, count)
+	successCount := 0
 	ctx, cancel := context.WithTimeout(context.Background(), TimeOut)
 	defer cancel()
 
 	for i := 0; i < count; i++ {
 		msg := icmp.Message{
 			Type: ipv4.ICMPTypeEcho,
-			Code: 1,
+			Code: 0,
 			Body: &icmp.Echo{
 				ID:   rand.Intn(65000),
 				Seq:  i,
@@ -63,14 +66,20 @@ func Ping(domain string, count int) (PingResult, error) {
 		c.SetReadDeadline(time.Now().Add(2 * time.Second))
 		select {
 		case <-ctx.Done():
-			return PingResult{}, err
+			return PingResult{}, ctx.Err()
 		default:
-			_, _, err := c.ReadFrom(make([]byte, 1500))
+			reply := make([]byte, 1500)
+			_, _, err := c.ReadFrom(reply)
 			if err != nil {
-				return PingResult{}, err
+				continue
 			}
-			rtts[i] = time.Since(start)
+			rtts = append(rtts, time.Since(start))
+			successCount++
 		}
+	}
+
+	if successCount == 0 {
+		return PingResult{}, errors.New("no successful pings")
 	}
 
 	minRTT, maxRTT, totalRTT := rtts[0], rtts[0], rtts[0]
@@ -85,9 +94,10 @@ func Ping(domain string, count int) (PingResult, error) {
 	}
 
 	return PingResult{
-		IP:     resolvedIP,
-		MinRTT: float64(minRTT.Milliseconds()),
-		AvgRTT: float64(totalRTT.Milliseconds()) / float64(count),
-		MaxRTT: float64(maxRTT.Milliseconds()),
+		IP:      resolvedIP,
+		Request: fmt.Sprintf("%d/%d", successCount, count),
+		MinRTT:  float64(minRTT.Milliseconds()),
+		AvgRTT:  float64(totalRTT.Milliseconds()) / float64(successCount),
+		MaxRTT:  float64(maxRTT.Milliseconds()),
 	}, nil
 }
