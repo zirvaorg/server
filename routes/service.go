@@ -2,6 +2,7 @@ package routes
 
 import (
 	"net/http"
+	"net/url"
 	"server/internal/logic"
 	"server/middleware"
 	"server/service"
@@ -72,9 +73,17 @@ func Service(mux *http.ServeMux) {
 			return
 		}
 
-		p := r.URL.Query().Get("p")
-		resultChan := make(chan *logic.Response)
+		p, err := url.QueryUnescape(r.URL.Query().Get("p"))
+		if err != nil {
+			logic.WriteResponse(w, &logic.Response{
+				Status:       http.StatusBadRequest,
+				Success:      false,
+				ErrorMessage: "Invalid parameter",
+			})
+			return
+		}
 
+		resultChan := make(chan *logic.Response)
 		go handleServiceOperation(op, p, resultChan)
 
 		select {
