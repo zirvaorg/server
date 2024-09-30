@@ -49,7 +49,7 @@ func Ping(domain string, count int) (PingResult, error) {
 	for i := 0; i < count; i++ {
 		msg := icmp.Message{
 			Type: ipv4.ICMPTypeEcho,
-			Code: 0,
+			Code: 1,
 			Body: &icmp.Echo{
 				ID:   rand.Intn(65000),
 				Seq:  i,
