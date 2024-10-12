@@ -14,7 +14,7 @@ import (
 type PingResult struct {
 	IP           string  `json:"ip"`
 	SuccessCount int     `json:"success_count"`
-	RequestCount int     `json:"request_request"`
+	RequestCount int     `json:"request_count"`
 	MinRTT       float64 `json:"min_rtt"`
 	AvgRTT       float64 `json:"avg_rtt"`
 	MaxRTT       float64 `json:"max_rtt"`
