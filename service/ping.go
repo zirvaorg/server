@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
 	"math/rand"
@@ -13,11 +12,12 @@ import (
 )
 
 type PingResult struct {
-	IP      string  `json:"ip"`
-	Request string  `json:"request"`
-	MinRTT  float64 `json:"min_rtt"`
-	AvgRTT  float64 `json:"avg_rtt"`
-	MaxRTT  float64 `json:"max_rtt"`
+	IP           string  `json:"ip"`
+	SuccessCount int     `json:"success_count"`
+	RequestCount int     `json:"request_request"`
+	MinRTT       float64 `json:"min_rtt"`
+	AvgRTT       float64 `json:"avg_rtt"`
+	MaxRTT       float64 `json:"max_rtt"`
 }
 
 func Ping(domain string, count int) (PingResult, error) {
@@ -78,10 +78,6 @@ func Ping(domain string, count int) (PingResult, error) {
 		}
 	}
 
-	if successCount == 0 {
-		return PingResult{}, errors.New("no successful pings")
-	}
-
 	minRTT, maxRTT, totalRTT := rtts[0], rtts[0], rtts[0]
 	for _, rtt := range rtts[1:] {
 		if rtt < minRTT {
@@ -93,11 +89,17 @@ func Ping(domain string, count int) (PingResult, error) {
 		totalRTT += rtt
 	}
 
+	avgRTT := float64(totalRTT.Milliseconds()) / float64(successCount)
+	if successCount == 0 {
+		avgRTT = 0
+	}
+
 	return PingResult{
-		IP:      resolvedIP,
-		Request: fmt.Sprintf("%d/%d", successCount, count),
-		MinRTT:  float64(minRTT.Milliseconds()),
-		AvgRTT:  float64(totalRTT.Milliseconds()) / float64(successCount),
-		MaxRTT:  float64(maxRTT.Milliseconds()),
+		IP:           resolvedIP,
+		RequestCount: count,
+		SuccessCount: successCount,
+		MinRTT:       float64(minRTT.Milliseconds()),
+		AvgRTT:       avgRTT,
+		MaxRTT:       float64(maxRTT.Milliseconds()),
 	}, nil
 }
