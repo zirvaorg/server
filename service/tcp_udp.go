@@ -6,17 +6,17 @@ import (
 	"time"
 )
 
-type ConnectionResult struct {
+type TcpUdpResult struct {
 	IP           string  `json:"ip,omitempty"`
 	ResponseTime float64 `json:"response_time,omitempty"`
 }
 
-func TcpOrUdp(p string, op string) (ConnectionResult, error) {
+func TcpOrUdp(p string, op string) (TcpUdpResult, error) {
 	start := time.Now()
 
 	resolvedAddr, err := utils.ResolveIPWithPort(p)
 	if err != nil {
-		return ConnectionResult{
+		return TcpUdpResult{
 			IP:           resolvedAddr,
 			ResponseTime: time.Since(start).Seconds(),
 		}, err
@@ -28,14 +28,14 @@ func TcpOrUdp(p string, op string) (ConnectionResult, error) {
 	} else if op == "udp" {
 		conn, err = net.DialTimeout("udp", resolvedAddr, TimeOut)
 	} else {
-		return ConnectionResult{
+		return TcpUdpResult{
 			IP:           resolvedAddr,
 			ResponseTime: time.Since(start).Seconds(),
 		}, err
 	}
 
 	if err != nil {
-		return ConnectionResult{
+		return TcpUdpResult{
 			IP:           resolvedAddr,
 			ResponseTime: time.Since(start).Seconds(),
 		}, err
@@ -48,7 +48,7 @@ func TcpOrUdp(p string, op string) (ConnectionResult, error) {
 		}
 	}(conn)
 
-	return ConnectionResult{
+	return TcpUdpResult{
 		IP:           resolvedAddr,
 		ResponseTime: time.Since(start).Seconds(),
 	}, nil

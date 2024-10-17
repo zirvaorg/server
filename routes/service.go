@@ -46,9 +46,9 @@ func handleServiceOperation(op, p string, resultChan chan<- *logic.Response) {
 	case "tcp", "udp":
 		connectionResult, err := service.TcpOrUdp(p, op)
 		resultChan <- &logic.Response{
-			Success:          err == nil,
-			Error:            err,
-			ConnectionResult: &connectionResult,
+			Success:      err == nil,
+			Error:        err,
+			TcpUdpResult: &connectionResult,
 		}
 
 	case "traceroute":
