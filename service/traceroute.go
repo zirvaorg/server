@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"math/rand"
 	"net"
 	"server/internal/utils"
@@ -12,6 +13,7 @@ import (
 
 const (
 	maxHops    = 64
+	timeOut    = 30 * time.Second
 	timeOutHop = 3 * time.Second
 	numProbes  = 3
 )
@@ -48,63 +50,72 @@ func Traceroute(address string) (TracerouteResult, error) {
 
 	var result TracerouteResult
 	targetReached := false
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
+	defer cancel()
+
 	for ttl := 1; ttl <= maxHops && !targetReached; ttl++ {
 		var RTTs []time.Duration
 		var addr net.Addr
 		for probe := 0; probe < numProbes; probe++ {
-			start := time.Now()
-			if err := p.SetTTL(ttl); err != nil {
-				RTTs = append(RTTs, -1)
-				continue
-			}
-
-			msg := icmp.Message{
-				Type: ipv4.ICMPTypeEcho,
-				Code: 0,
-				Body: &icmp.Echo{
-					ID:   rand.Intn(65000),
-					Seq:  probe,
-					Data: []byte(EchoData),
-				},
-			}
-			msgBytes, err := msg.Marshal(nil)
-			if err != nil {
-				RTTs = append(RTTs, -1)
-				continue
-			}
-
-			if _, err := p.WriteTo(msgBytes, nil, ipAddr); err != nil {
-				RTTs = append(RTTs, -1)
-				continue
-			}
-
-			rb := make([]byte, 1500)
-			if err := c.SetReadDeadline(time.Now().Add(timeOutHop)); err != nil {
-				RTTs = append(RTTs, -1)
-				continue
-			}
-			n, a, err := c.ReadFrom(rb)
-			if err != nil {
-				RTTs = append(RTTs, -1)
-				continue
-			}
-			addr = a
-
-			rm, err := icmp.ParseMessage(1, rb[:n])
-			if err != nil {
-				RTTs = append(RTTs, -1)
-				continue
-			}
-
-			duration := time.Since(start)
-			switch rm.Type {
-			case ipv4.ICMPTypeTimeExceeded, ipv4.ICMPTypeEchoReply:
-				RTTs = append(RTTs, duration)
-				if rm.Type == ipv4.ICMPTypeEchoReply {
-					targetReached = true
-				}
+			select {
+			case <-ctx.Done():
+				return result, ctx.Err()
 			default:
-				RTTs = append(RTTs, -1)
+				start := time.Now()
+				if err := p.SetTTL(ttl); err != nil {
+					RTTs = append(RTTs, -1)
+					continue
+				}
+
+				msg := icmp.Message{
+					Type: ipv4.ICMPTypeEcho,
+					Code: 0,
+					Body: &icmp.Echo{
+						ID:   rand.Intn(65000),
+						Seq:  probe,
+						Data: []byte(EchoData),
+					},
+				}
+				msgBytes, err := msg.Marshal(nil)
+				if err != nil {
+					RTTs = append(RTTs, -1)
+					continue
+				}
+
+				if _, err := p.WriteTo(msgBytes, nil, ipAddr); err != nil {
+					RTTs = append(RTTs, -1)
+					continue
+				}
+
+				rb := make([]byte, 1500)
+				if err := c.SetReadDeadline(time.Now().Add(timeOutHop)); err != nil {
+					RTTs = append(RTTs, -1)
+					continue
+				}
+				n, a, err := c.ReadFrom(rb)
+				if err != nil {
+					RTTs = append(RTTs, -1)
+					continue
+				}
+				addr = a
+
+				rm, err := icmp.ParseMessage(1, rb[:n])
+				if err != nil {
+					RTTs = append(RTTs, -1)
+					continue
+				}
+
+				duration := time.Since(start)
+				switch rm.Type {
+				case ipv4.ICMPTypeTimeExceeded, ipv4.ICMPTypeEchoReply:
+					RTTs = append(RTTs, duration)
+					if rm.Type == ipv4.ICMPTypeEchoReply {
+						targetReached = true
+					}
+				default:
+					RTTs = append(RTTs, -1)
+				}
 			}
 		}
 

@@ -10,7 +10,7 @@ import (
 	"server/internal/server"
 )
 
-const CurrentVersion = "0.1.2"
+const CurrentVersion = "0.1.3"
 const ServerPort = "9479"
 
 func init() {
