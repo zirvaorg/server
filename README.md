@@ -7,9 +7,10 @@ This server package is specially developed for [zirva.org](https://zirva.org). W
 [![pkg.go.dev](https://pkg.go.dev/badge/github.com/zirvaorg/server)](https://pkg.go.dev/github.com/zirvaorg/server)
 
 ## Getting Started
-1. Start the server with `zirva` command. You can specify a port with the `-p PORT` argument.
-2. Add the registration URL in the “Add Server” section of the [portal](https://portal.zirva.org).
-3. Everything is ready!
+1. Run installation script.
+2. Allow `9479` port in your firewall.
+3. Add the auth URL in the “Add Server” section of the [portal](https://portal.zirva.org).
+4. Everything is ready. Enjoy! 🎉
 
 ## Installation
 ```bash
@@ -26,7 +27,7 @@ sudo wget -q -O - https://zirva.org/uninstall.sh | sudo bash
 |-------------|-----------------------------------|
 | OS          | Linux (`x86_64`, `i386`, `arm64`) |
 | Packages    | `curl`, `crontab`, `systemctl`    |
-| Network     | 100 Mbps >                        |
+| Network     | 100 Mbps >,                       |
 | RAM         | 100 MB >                          |
 | Disk        | 50 MB >                           |
 
